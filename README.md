@@ -1,5 +1,5 @@
 # Jenkins for Developers on localhost
 
-
-make build
-make run
+### Build & Run
+    1. make build
+    2. make run
