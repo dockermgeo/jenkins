@@ -12,6 +12,10 @@ services:
       source: '/var/run/docker.sock'
       target: '/var/run/docker.sock'
       read_only: true
+    - type: bind
+      source: '/data/docker/JENKINS'
+      target: '/var/share/JENKINS'
+      read_only: false
     tty: true
 
   git:

@@ -1,22 +1,31 @@
-
-
-APP="jenkins"
-NAMESPACE="dockermgeo"
-IMAGE="$(NAMESPACE)/$(APP)"
-VERSION="latest"
-IDS=`docker ps | grep jenkinsfile-|awk '{print $$1}'`
-
+#
+APP := "jenkins"
+NAMESPACE := "dockermgeo"
+IMAGE := "$(NAMESPACE)/$(APP)"
+VERSION := "latest"
+IDS := $(shell docker ps | grep jenkinsfile-|awk '{print $$1}')
+HOSTNAME := $(shell hostname)
 install: build
+#
 
-build:
+## BUILD
+prebuild: build.rename
+	sudo mkdir -p /docker/data/JENKINS
+	sudo mkdir -p /docker/data/GITLAB
+
+build.rename:
+	cat docker-compose.tpl | sed -e 's#githost#$(HOSTNAME)#' >docker-compose.yml;
+
+build.plain: prebuild
 	docker build -t $(IMAGE):$(VERSION) .
 
-compose.build:
-	docker-compose pull
-	docker-compose build
+build: prebuild
+	docker-compose -f docker-jenkins.yml build
 
-run:
-	docker-compose up
+
+## RUN
+run: build.rename
+	docker-compose -f docker-jenkins.yml up
 
 stop:
 	docker rm -f $(IDS)
